@@ -338,13 +338,13 @@ func (arch *NewArchiver) Save(ctx context.Context, snPath, target string, previo
 			// in this case, redo the stat and carry on
 			fi, errFI = arch.FS.Lstat(target)
 		} else {
-			return FutureNode{}, false, errOpen
+			return FutureNode{}, false, errors.Wrap(errOpen, "OpenFile")
 		}
 	}
 
 	if errFI != nil {
 		_ = file.Close()
-		return FutureNode{}, false, errFI
+		return FutureNode{}, false, errors.Wrap(errFI, "Stat")
 	}
 
 	switch {
@@ -439,6 +439,22 @@ func join(elem ...string) string {
 	return path.Join(elem...)
 }
 
+// statDir returns the file info for the directory. Symbolic links are
+// resolved. If the target directory is not a directory, an error is returned.
+func (arch *NewArchiver) statDir(dir string) (os.FileInfo, error) {
+	fi, err := arch.FS.Stat(dir)
+	if err != nil {
+		return nil, errors.Wrap(err, "Lstat")
+	}
+
+	tpe := fi.Mode() & (os.ModeType | os.ModeCharDevice)
+	if tpe != os.ModeDir {
+		return fi, errors.Errorf("path is not a directory: %v", dir)
+	}
+
+	return fi, nil
+}
+
 // SaveTree stores a Tree in the repo, returned is the tree. snPath is the path
 // within the current snapshot.
 func (arch *NewArchiver) SaveTree(ctx context.Context, snPath string, atree *Tree, previous *restic.Tree) (*restic.Tree, error) {
@@ -496,9 +512,9 @@ func (arch *NewArchiver) SaveTree(ctx context.Context, snPath string, atree *Tre
 
 		debug.Log("%v, saved subtree %v as %v", snPath, subtree, id.Str())
 
-		fi, err := arch.FS.Lstat(subatree.FileInfoPath)
+		fi, err := arch.statDir(subatree.FileInfoPath)
 		if err != nil {
-			return nil, errors.Wrap(err, "Lstat")
+			return nil, err
 		}
 
 		debug.Log("%v, dir node data loaded from %v", snPath, subatree.FileInfoPath)

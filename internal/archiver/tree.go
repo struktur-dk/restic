@@ -206,7 +206,7 @@ func formatTree(t Tree, indent string) (s string) {
 			s += fmt.Sprintf("%v/%v, src %q\n", indent, name, node.Path)
 			continue
 		}
-		s += fmt.Sprintf("%v/%v, root %q, meta  %q\n", indent, name, node.Root, node.FileInfoPath)
+		s += fmt.Sprintf("%v/%v, root %q, meta %q\n", indent, name, node.Root, node.FileInfoPath)
 		s += formatTree(node, indent+"    ")
 	}
 	return s
