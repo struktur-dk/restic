@@ -382,8 +382,15 @@ func nodeFromFI(t testing.TB, filename string, fi os.FileInfo) *restic.Node {
 func TestFileChanged(t *testing.T) {
 	var defaultContent = []byte("foobar")
 
+	var d = 50 * time.Millisecond
+	if runtime.GOOS == "darwin" {
+		// on older darwin instances the file system only supports one second
+		// granularity
+		d = time.Second
+	}
+
 	sleep := func() {
-		time.Sleep(250 * time.Millisecond)
+		time.Sleep(d)
 	}
 
 	var tests = []struct {
