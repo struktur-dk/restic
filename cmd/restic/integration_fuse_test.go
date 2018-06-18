@@ -1,3 +1,4 @@
+// +build !netbsd
 // +build !openbsd
 // +build !solaris
 // +build !windows
@@ -171,7 +172,7 @@ func TestMount(t *testing.T) {
 	rtest.SetupTarTestFixture(t, env.testdata, filepath.Join("testdata", "backup-data.tar.gz"))
 
 	// first backup
-	testRunBackup(t, []string{env.testdata}, BackupOptions{}, env.gopts)
+	testRunBackup(t, "", []string{env.testdata}, BackupOptions{}, env.gopts)
 	snapshotIDs := testRunList(t, "snapshots", env.gopts)
 	rtest.Assert(t, len(snapshotIDs) == 1,
 		"expected one snapshot, got %v", snapshotIDs)
@@ -179,7 +180,7 @@ func TestMount(t *testing.T) {
 	checkSnapshots(t, env.gopts, repo, env.mountpoint, env.repo, snapshotIDs, 2)
 
 	// second backup, implicit incremental
-	testRunBackup(t, []string{env.testdata}, BackupOptions{}, env.gopts)
+	testRunBackup(t, "", []string{env.testdata}, BackupOptions{}, env.gopts)
 	snapshotIDs = testRunList(t, "snapshots", env.gopts)
 	rtest.Assert(t, len(snapshotIDs) == 2,
 		"expected two snapshots, got %v", snapshotIDs)
@@ -188,7 +189,7 @@ func TestMount(t *testing.T) {
 
 	// third backup, explicit incremental
 	bopts := BackupOptions{Parent: snapshotIDs[0].String()}
-	testRunBackup(t, []string{env.testdata}, bopts, env.gopts)
+	testRunBackup(t, "", []string{env.testdata}, bopts, env.gopts)
 	snapshotIDs = testRunList(t, "snapshots", env.gopts)
 	rtest.Assert(t, len(snapshotIDs) == 3,
 		"expected three snapshots, got %v", snapshotIDs)

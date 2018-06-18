@@ -15,20 +15,24 @@ Preparing a new repository
 ##########################
 
 The place where your backups will be saved at is called a "repository".
-This chapter explains how to create ("init") such a repository.
+This chapter explains how to create ("init") such a repository. The repository
+can be stored locally, or on some remote server or service. We'll first cover
+using a local repository, the remaining sections of this chapter cover all the
+other options. You can skip to the next chapter once you've read the relevant
+section here.
 
 Local
 *****
 
-In order to create a repository at ``/tmp/backup``, run the following
+In order to create a repository at ``/srv/restic-repo``, run the following
 command and enter the same password twice:
 
 .. code-block:: console
 
-    $ restic init --repo /tmp/backup
+    $ restic init --repo /srv/restic-repo
     enter password for new backend:
     enter password again:
-    created restic backend 085b3c76b9 at /tmp/backup
+    created restic backend 085b3c76b9 at /srv/restic-repo
     Please note that knowledge of your password is required to access the repository.
     Losing your password means that your data is irrecoverably lost.
 
@@ -55,10 +59,10 @@ simply be achieved by changing the URL scheme in the ``init`` command:
 
 .. code-block:: console
 
-    $ restic -r sftp:user@host:/tmp/backup init
+    $ restic -r sftp:user@host:/srv/restic-repo init
     enter password for new backend:
     enter password again:
-    created restic backend f1c6108821 at sftp:user@host:/tmp/backup
+    created restic backend f1c6108821 at sftp:user@host:/srv/restic-repo
     Please note that knowledge of your password is required to access the repository.
     Losing your password means that your data is irrecoverably lost.
 
@@ -87,7 +91,7 @@ specify the user name in this case):
 
 ::
 
-    $ restic -r sftp:foo:/tmp/backup init
+    $ restic -r sftp:foo:/srv/restic-repo init
 
 You can also add an entry with a special host name which does not exist,
 just for use with restic, and use the ``Hostname`` option to set the
@@ -104,7 +108,7 @@ Then use it in the backend specification:
 
 ::
 
-    $ restic -r sftp:restic-backup-host:/tmp/backup init
+    $ restic -r sftp:restic-backup-host:/srv/restic-repo init
 
 Last, if you'd like to use an entirely different program to create the
 SFTP connection, you can specify the command to be run with the option
@@ -139,7 +143,10 @@ If you use TLS, restic will use the system's CA certificates to verify the
 server certificate. When the verification fails, restic refuses to proceed and
 exits with an error. If you have your own self-signed certificate, or a custom
 CA certificate should be used for verification, you can pass restic the
-certificate filename via the ``--cacert`` option.
+certificate filename via the ``--cacert`` option. It will then verify that the
+server's certificate is contained in the file passed to this option, or signed
+by a CA certificate in the file. In this case, the system CA certificates are
+not considered at all.
 
 REST server uses exactly the same directory structure as local backend,
 so you should be able to access it both locally and via HTTP, even
@@ -362,8 +369,7 @@ key file and the project ID as follows:
     $ export GOOGLE_PROJECT_ID=123123123123
     $ export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gs-secret-restic-key.json
 
-Restic uses  Google's client library to generate [default authentication
-material](https://developers.google.com/identity/protocols/application-default-credentials),
+Restic uses  Google's client library to generate `default authentication material`_,
 which means if you're running in Google Container Engine or are otherwise
 located on an instance with default service accounts then these should work out
 the box.
@@ -386,6 +392,7 @@ established.
 
 .. _service account: https://cloud.google.com/storage/docs/authentication#service_accounts
 .. _create a service account key: https://cloud.google.com/storage/docs/authentication#generating-a-private-key
+.. _default authentication material: https://developers.google.com/identity/protocols/application-default-credentials
 
 Other Services via rclone
 *************************
@@ -435,7 +442,7 @@ listing similar to the following:
         448 bar/baz/keys/4bf9c78049de689d73a56ed0546f83b8416795295cda12ec7fb9465af3900b44
 
 Rclone can be `configured with environment variables`_, so for instance
-configuring a bandwidth limit for rclone cat be achieve by setting the
+configuring a bandwidth limit for rclone can be achieved by setting the
 ``RCLONE_BWLIMIT`` environment variable:
 
 .. code-block:: console
@@ -449,7 +456,7 @@ The rclone backend has two additional options:
  * ``-o rclone.program`` specifies the path to rclone, the default value is just ``rclone``
  * ``-o rclone.args`` allows setting the arguments passed to rclone, by default this is ``serve restic --stdio --b2-hard-delete --drive-use-trash=false``
 
-The reason why the two last parameters (``--b2-hard-delete`` and
+The reason for the two last parameters (``--b2-hard-delete`` and
 ``--drive-use-trash=false``) can be found in the corresponding GitHub `issue #1657`_.
 
 In order to start rclone, restic will build a list of arguments by joining the
@@ -509,5 +516,5 @@ On MSYS2, you can install ``winpty`` as follows:
 .. code-block:: console
 
     $ pacman -S winpty
-    $ winpty restic -r /tmp/backup init
+    $ winpty restic -r /srv/restic-repo init
 

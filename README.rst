@@ -29,7 +29,7 @@ and add some data:
 
 .. code-block:: console
 
-    $ restic -r /tmp/backup backup ~/work
+    $ restic --repo /tmp/backup backup ~/work
     enter password for repository:
     scan [/home/user/work]
     scanned 764 directories, 1816 files in 0:00
@@ -113,8 +113,8 @@ complete text in ``LICENSE``.
 
 .. |Documentation| image:: https://readthedocs.org/projects/restic/badge/?version=latest
    :target: https://restic.readthedocs.io/en/latest/?badge=latest
-.. |Build Status| image:: https://travis-ci.org/restic/restic.svg?branch=master
-   :target: https://travis-ci.org/restic/restic
+.. |Build Status| image:: https://travis-ci.com/restic/restic.svg?branch=master
+   :target: https://travis-ci.com/restic/restic
 .. |Build status| image:: https://ci.appveyor.com/api/projects/status/nuy4lfbgfbytw92q/branch/master?svg=true
    :target: https://ci.appveyor.com/project/fd0/restic/branch/master
 .. |Report Card| image:: https://goreportcard.com/badge/github.com/restic/restic

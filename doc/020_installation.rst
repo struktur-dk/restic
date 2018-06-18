@@ -74,13 +74,25 @@ installed from the official repos, e.g. with ``apt-get``:
 RHEL & CentOS
 =============
 
-restic can be installed via copr repository.
+restic can be installed via copr repository, for RHEL7/CentOS you can try the following:
 
 .. code-block:: console
 
     $ yum install yum-plugin-copr
     $ yum copr enable copart/restic
     $ yum install restic
+
+If that doesn't work, you can try adding the repository directly, for CentOS6 use:
+
+.. code-block:: console
+
+    $ yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/copart/restic/repo/epel-6/copart-restic-epel-6.repo
+
+For CentOS7 use:
+
+.. code-block:: console
+
+    $ yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/copart/restic/repo/epel-7/copart-restic-epel-7.repo
 
 Fedora
 ======
@@ -145,15 +157,23 @@ Admin rights.
 Docker Container
 ****************
 
+We're maintaining a bare docker container with just a few files and the restic
+binary, you can get it with `docker pull` like this:
+
+.. code-block:: console
+
+    $ docker pull restic/restic
+
 .. note::
-   | A docker container is available as a contribution (Thank you!).
-   | You can find it at https://github.com/Lobaro/restic-backup-docker
+   | Another docker container which offers more configuration options is
+   | available as a contribution (Thank you!). You can find it at
+   | https://github.com/Lobaro/restic-backup-docker
 
 From Source
 ***********
 
 restic is written in the Go programming language and you need at least
-Go version 1.8. Building restic may also work with older versions of Go,
+Go version 1.9. Building restic may also work with older versions of Go,
 but that's not supported. See the `Getting
 started <https://golang.org/doc/install>`__ guide of the Go project for
 instructions how to install Go.
@@ -173,7 +193,7 @@ You can easily cross-compile restic for all supported platforms, just
 supply the target OS and platform via the command-line options like this
 (for Windows and FreeBSD respectively):
 
-::
+.. code-block:: console
 
     $ go run build.go --goos windows --goarch amd64
 
